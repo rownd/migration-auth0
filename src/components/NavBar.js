@@ -18,24 +18,17 @@ import {
   DropdownItem,
 } from "reactstrap";
 
-import { useAuth0 } from "@auth0/auth0-react";
+import { useRownd } from "@rownd/react";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const {
     user,
-    isAuthenticated,
-    loginWithRedirect,
-    logout,
-  } = useAuth0();
+    is_authenticated,
+    requestSignIn,
+    signOut,
+  } = useRownd();
   const toggle = () => setIsOpen(!isOpen);
-
-  const logoutWithRedirect = () =>
-    logout({
-        logoutParams: {
-          returnTo: window.location.origin,
-        }
-    });
 
   return (
     <div className="nav-container">
@@ -55,7 +48,7 @@ const NavBar = () => {
                   Home
                 </NavLink>
               </NavItem>
-              {isAuthenticated && (
+              {is_authenticated && (
                 <NavItem>
                   <NavLink
                     tag={RouterNavLink}
@@ -69,30 +62,30 @@ const NavBar = () => {
               )}
             </Nav>
             <Nav className="d-none d-md-block" navbar>
-              {!isAuthenticated && (
+              {!is_authenticated && (
                 <NavItem>
                   <Button
                     id="qsLoginBtn"
                     color="primary"
                     className="btn-margin"
-                    onClick={() => loginWithRedirect()}
+                    onClick={() => requestSignIn()}
                   >
                     Log in
                   </Button>
                 </NavItem>
               )}
-              {isAuthenticated && (
+              {is_authenticated && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret id="profileDropDown">
                     <img
-                      src={user.picture}
+                      src={user.data.picture}
                       alt="Profile"
                       className="nav-user-profile rounded-circle"
                       width="50"
                     />
                   </DropdownToggle>
                   <DropdownMenu>
-                    <DropdownItem header>{user.name}</DropdownItem>
+                    <DropdownItem header>{user.data.name}</DropdownItem>
                     <DropdownItem
                       tag={RouterNavLink}
                       to="/profile"
@@ -103,7 +96,7 @@ const NavBar = () => {
                     </DropdownItem>
                     <DropdownItem
                       id="qsLogoutBtn"
-                      onClick={() => logoutWithRedirect()}
+                      onClick={() => signOut()}
                     >
                       <FontAwesomeIcon icon="power-off" className="mr-3" /> Log
                       out
@@ -112,21 +105,23 @@ const NavBar = () => {
                 </UncontrolledDropdown>
               )}
             </Nav>
-            {!isAuthenticated && (
+            {!is_authenticated && (
               <Nav className="d-md-none" navbar>
                 <NavItem>
                   <Button
                     id="qsLoginBtn"
                     color="primary"
                     block
-                    onClick={() => loginWithRedirect({})}
+                    onClick={() => requestSignIn({
+                      redirect_url: '/external-api'
+                    })}
                   >
                     Log in
                   </Button>
                 </NavItem>
               </Nav>
             )}
-            {isAuthenticated && (
+            {is_authenticated && (
               <Nav
                 className="d-md-none justify-content-between"
                 navbar
@@ -135,12 +130,12 @@ const NavBar = () => {
                 <NavItem>
                   <span className="user-info">
                     <img
-                      src={user.picture}
+                      src={user.data.picture}
                       alt="Profile"
                       className="nav-user-profile d-inline-block rounded-circle mr-3"
                       width="50"
                     />
-                    <h6 className="d-inline-block">{user.name}</h6>
+                    <h6 className="d-inline-block">{user.data.name}</h6>
                   </span>
                 </NavItem>
                 <NavItem>
@@ -157,7 +152,7 @@ const NavBar = () => {
                   <RouterNavLink
                     to="#"
                     id="qsLogoutBtn"
-                    onClick={() => logoutWithRedirect()}
+                    onClick={() => signOut()}
                   >
                     Log out
                   </RouterNavLink>

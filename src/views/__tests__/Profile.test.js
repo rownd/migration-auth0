@@ -11,7 +11,7 @@ describe("The profile component", () => {
       loading: false,
       user: {
         name: "Test user",
-        email: "test@user.com",
+        email: "test@user.data.com",
         picture: "https://avatar.com",
       },
     });

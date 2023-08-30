@@ -2,8 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const helmet = require("helmet");
-const { auth } = require("express-oauth2-jwt-bearer");
 const authConfig = require("./src/auth_config.json");
+const { createInstance } = require('@rownd/node');
 
 const app = express();
 
@@ -27,13 +27,13 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(cors({ origin: appOrigin }));
 
-const checkJwt = auth({
-  audience: authConfig.audience,
-  issuerBaseURL: `https://${authConfig.domain}/`,
-  algorithms: ["RS256"],
+const rownd = createInstance({
+  app_key: 'YOUR_APP_KEY',
+  app_secret: 'YOUR_APP_SECRET',
 });
+const { authenticate } = rownd.express;
 
-app.get("/api/external", checkJwt, (req, res) => {
+app.get("/api/external", authenticate(), (req, res) => {
   res.send({
     msg: "Your access token was successfully validated!",
   });
